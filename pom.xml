@@ -46,9 +46,6 @@
                             <version>1.18.20</version>
                         </path>
                     </annotationProcessorPaths>
-                    <excludes>
-                        <exclude>**/MixinsProcessor.java</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
