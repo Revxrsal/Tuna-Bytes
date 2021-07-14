@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/ReflxctionDev/tuna-bytes.svg)](https://jitpack.io/#ReflxctionDev/tuna-bytes)
+
 # Tuna Bytes
 ![A tuna byte :)](https://i.imgur.com/15VLkMI.jpg)
 Tuna-bytes is an all-purpose powerful class and bytecode manipulation mixins for Java, which is intended at those with minimal understanding of the Java bytecode structure.
