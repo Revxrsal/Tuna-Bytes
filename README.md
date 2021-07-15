@@ -29,8 +29,8 @@ repositories {
 
 ```groovy
 dependencies {
-    implementation 'com.github.ReflxctionDev:{artifact}:1.0'
-    annotationProcessor 'com.github.ReflxctionDev:{artifact}:1.0'
+    implementation 'com.github.ReflxctionDev.tuna-bytes:{artifact}:1.0'
+    annotationProcessor 'com.github.ReflxctionDev.tuna-bytes:{artifact}:1.0'
 }
 ```
 
@@ -45,7 +45,7 @@ dependencies {
 ```
 ```xml
 <dependency>
-    <groupId>com.github.ReflxctionDev</groupId>
+    <groupId>com.github.ReflxctionDev.tuna-bytes</groupId>
     <artifactId>{artifact}</artifactId>
     <version>1.0</version>
 </dependency>
@@ -61,7 +61,7 @@ dependencies {
             <configuration>
                 <annotationProcessorPaths>
                     <annotationProcessorPath>
-                        <groupId>com.github.ReflxctionDev</groupId>
+                        <groupId>com.github.ReflxctionDev.tuna-bytes</groupId>
                         <artifactId>{artifact}</artifactId>
                         <version>1.0/version>
                     </annotationProcessorPath>
