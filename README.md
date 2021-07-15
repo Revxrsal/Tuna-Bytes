@@ -11,6 +11,15 @@ Tuna-bytes is an all-purpose powerful class and bytecode manipulation mixins for
 - Does not require any additional Java execution arguments, like what Java agents do.
 
 ## Usage
+
+Note: Due to the many changes done to classloading semantics, classloading code has been abstracted across Java 8+ versions. Therefore, the value of `{artifact}` in the examples below should be determined by the Java version you're going to run on. When unsure, you can include all versions and exclude the dependencies from them accordingly.
+
+| Your Java version | Tuna-Bytes artifact |
+|-------------------|--------------------|
+| Java 8            | java8              |
+| Java 9 / Java 10  | java9              |
+| Java 11+          | java11             |
+
 **build.gradle**:
 ```groovy
 repositories {
@@ -20,26 +29,26 @@ repositories {
 
 ```groovy
 dependencies {
-    implementation 'com.github.ReflxctionDev:tuna-bytes:1.0'
-    annotationProcessor 'com.github.ReflxctionDev:tuna-bytes:1.0'
+    implementation 'com.github.ReflxctionDev:{artifact}:1.0'
+    annotationProcessor 'com.github.ReflxctionDev:{artifact}:1.0'
 }
 ```
 
 **pom.xml**
 ```xml
-	<repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
+<repositories>
+    <repository>
+	<id>jitpack.io</id>
+	<url>https://jitpack.io</url>
+    </repository>
+</repositories>
 ```
 ```xml
-	<dependency>
-	    <groupId>com.github.ReflxctionDev</groupId>
-	    <artifactId>tuna-bytes</artifactId>
-	    <version>1.0</version>
-	</dependency>
+<dependency>
+    <groupId>com.github.ReflxctionDev</groupId>
+    <artifactId>{artifact}</artifactId>
+    <version>1.0</version>
+</dependency>
 ```
 
 ```xml
@@ -53,7 +62,7 @@ dependencies {
                 <annotationProcessorPaths>
                     <annotationProcessorPath>
                         <groupId>com.github.ReflxctionDev</groupId>
-                        <artifactId>tuna-bytes</artifactId>
+                        <artifactId>{artifact}</artifactId>
                         <version>1.0/version>
                     </annotationProcessorPath>
                 </annotationProcessorPaths>

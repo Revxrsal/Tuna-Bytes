@@ -213,7 +213,7 @@ class SecurityActions extends SecurityManager {
      */
     static void disableWarning(TheUnsafe tu) {
         try {
-            if (DefineClassHelper.MAJOR_VERSION < DefineClassHelper.JAVA_9)
+            if (TunaClassDefiner.MAJOR_VERSION < TunaClassDefiner.JAVA_9)
                 return;
             Class<?> cls = Class.forName("jdk.internal.module.IllegalAccessLogger");
             Field logger = cls.getDeclaredField("logger");

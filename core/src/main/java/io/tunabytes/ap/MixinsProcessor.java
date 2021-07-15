@@ -43,15 +43,16 @@ public class MixinsProcessor extends AbstractProcessor {
                 type.getAnnotation(Mixin.class).value();
             } catch (MirroredTypeException e) {
                 mixins.add(type.getQualifiedName().toString() + "=" + e.getTypeMirror());
-                PackageElement packageElement = (PackageElement) type.getEnclosingElement();
+                PackageElement packageElement = (PackageElement) asTypeElement(e.getTypeMirror()).getEnclosingElement();
                 String packageName = packageElement.toString();
-                String className = "Neighbor" + packageName.hashCode();
+                String className = ("Neighbor" + packageName.hashCode()).replace("-", "");
                 String pn = packageName + "." + className;
                 if (neighbors.get(packageName) == null) {
                     try {
                         String fileName = packageName.isEmpty()
                                 ? className
                                 : pn;
+                        neighbors.put(packageName, fileName);
                         JavaFileObject filerSourceFile = processingEnv.getFiler().createSourceFile(fileName);
                         try (Writer writer = filerSourceFile.openWriter()) {
                             if (!packageName.isEmpty()) {
@@ -68,7 +69,6 @@ public class MixinsProcessor extends AbstractProcessor {
                         }
                     } catch (IOException ignored) {
                     }
-                    neighbors.put(packageName, className);
                 }
             }
         }

@@ -3,17 +3,18 @@ package io.tunabytes.bytecode;
 import io.tunabytes.bytecode.editor.*;
 import io.tunabytes.bytecode.introspect.MixinClassVisitor;
 import io.tunabytes.bytecode.introspect.MixinInfo;
-import io.tunabytes.classloader.DefineClassHelper;
+import io.tunabytes.classloader.TunaClassDefiner;
 import lombok.SneakyThrows;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -74,16 +75,23 @@ public final class MixinsBootstrap {
             Entry<ClassWriter, ClassNode> be = writerEntry.getValue();
             be.getValue().accept(be.getKey());
             try {
-                try {
-                    DefineClassHelper.toClass(writerEntry.getKey(),
-                            null, Thread.currentThread().getContextClassLoader(), null, be.getKey().toByteArray());
-                } catch (Throwable throwable) {
-                    Class<?> neighbor = config.getNeighbor(writerEntry.getKey());
-                    DefineClassHelper.toClass(neighbor, be.getKey().toByteArray());
-                }
+                File file = new File("mixins.class").getAbsoluteFile();
+                file.createNewFile();
+                Files.write(file.toPath(), be.getKey().toByteArray(), StandardOpenOption.WRITE);
+                TunaClassDefiner.defineClass(
+                        writerEntry.getKey(),
+                        be.getKey().toByteArray(),
+                        config.getNeighbor(writerEntry.getKey()),
+                        Thread.currentThread().getContextClassLoader(),
+                        null
+                );
             } catch (Throwable throwable) {
-                if (!ignoreLoadedClasses)
-                    throw new IllegalStateException("Unable to load mixin modifications for class " + writerEntry.getKey() + ". Has the class been loaded?", throwable);
+                if (!ignoreLoadedClasses) {
+                    if (throwable.getClass() == LinkageError.class || Objects.equals(throwable.getCause().getClass(), LinkageError.class)) {
+                        throw new IllegalStateException("Class " + writerEntry.getKey() + " has already been loaded.");
+                    }
+                    throw new IllegalStateException("Unable to load mixin modifications for class " + writerEntry.getKey(), throwable);
+                }
             }
         }
     }
