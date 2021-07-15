@@ -10,10 +10,10 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <properties>
-        <maven.compiler.source>9</maven.compiler.source>
-        <maven.compiler.target>9</maven.compiler.target>
-    </properties>
+<!--    <properties>-->
+<!--        <maven.compiler.source>9</maven.compiler.source>-->
+<!--        <maven.compiler.target>9</maven.compiler.target>-->
+<!--    </properties>-->
 
     <artifactId>java9</artifactId>
 
