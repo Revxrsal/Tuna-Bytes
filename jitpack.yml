@@ -1,3 +1,8 @@
+before_install:
+  - sdk install java 9.0.4-oracle
+  - sdk use java 9.0.4-oracle
+  - sdk install java 11.0.10-open
+  - sdk use java 11.0.10-open
 jdk:
   - openjdk8
   - oraclejdk9
