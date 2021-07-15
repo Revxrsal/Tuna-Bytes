@@ -1,0 +1,4 @@
+jdk:
+  - openjdk8
+  - oraclejdk9
+  - oraclejdk11
