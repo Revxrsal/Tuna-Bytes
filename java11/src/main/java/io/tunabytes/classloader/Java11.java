@@ -36,12 +36,18 @@ final class Java11 implements ClassDefiner {
                         name, b, off, len, protectionDomain
                 });
             } catch (Throwable e) {
-                throw sneakyThrow(e);
+                sneakyThrow(e);
+                return null;
             }
         }
     }
 
-    private static <T extends Throwable> T sneakyThrow(Throwable t) throws T {
+    private static RuntimeException sneakyThrow(Throwable t) {
+        if (t == null) throw new NullPointerException("t");
+        return sneakyThrow0(t);
+    }
+
+    private static <T extends Throwable> T sneakyThrow0(Throwable t) throws T {
         throw (T) t;
     }
 
