@@ -75,9 +75,6 @@ public final class MixinsBootstrap {
             Entry<ClassWriter, ClassNode> be = writerEntry.getValue();
             be.getValue().accept(be.getKey());
             try {
-                File file = new File("mixins.class").getAbsoluteFile();
-                file.createNewFile();
-                Files.write(file.toPath(), be.getKey().toByteArray(), StandardOpenOption.WRITE);
                 TunaClassDefiner.defineClass(
                         writerEntry.getKey(),
                         be.getKey().toByteArray(),
