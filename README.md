@@ -11,6 +11,7 @@ Tuna-bytes is an all-purpose powerful class and bytecode manipulation mixins for
 - Does not require any additional Java execution arguments, like what Java agents do.
 
 ## Index
+Check the [wiki](https://github.com/ReflxctionDev/tuna-bytes/wiki) for a full overview on the library.
 1. [Maven setup](https://github.com/ReflxctionDev/tuna-bytes/wiki/Maven-Setup)
 2. [Gradle setup](https://github.com/ReflxctionDev/tuna-bytes/wiki/Gradle-Setup)
 3. [Getting started](https://github.com/ReflxctionDev/tuna-bytes/wiki/Getting-started)
