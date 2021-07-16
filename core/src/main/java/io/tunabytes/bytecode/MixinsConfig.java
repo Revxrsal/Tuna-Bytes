@@ -1,5 +1,7 @@
 package io.tunabytes.bytecode;
 
+import io.tunabytes.classloader.TunaClassDefiner;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -20,15 +22,17 @@ final class MixinsConfig {
             properties.forEach((key, value) -> mixinEntries.add(new MixinEntry((String) key, (String) value)));
             InputStream neighborsStream = getClass().getResourceAsStream("/mixins-neighbors.properties");
             requireNonNull(neighborsStream, "mixins-neighbors.properties not found. Did you add tuna-bytes as an annotation processor?");
-            Properties neighborsProps = new Properties();
-            neighborsProps.load(neighborsStream);
-            neighborsProps.forEach((key, value) -> {
-                try {
-                    neighbors.put((String) key, Class.forName(String.valueOf(value)));
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            });
+            if (TunaClassDefiner.requiresNeighbor()) {
+                Properties neighborsProps = new Properties();
+                neighborsProps.load(neighborsStream);
+                neighborsProps.forEach((key, value) -> {
+                    try {
+                        neighbors.put((String) key, Class.forName(String.valueOf(value)));
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

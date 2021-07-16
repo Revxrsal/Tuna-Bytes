@@ -71,4 +71,8 @@ public final class TunaClassDefiner {
                                        ProtectionDomain protectionDomain) throws ClassFormatError {
         return classDefiner.defineClass(name, b, 0, b.length, neighbor, loader, protectionDomain);
     }
+
+    public static boolean requiresNeighbor() {
+        return classDefiner.requiresNeighbor();
+    }
 }

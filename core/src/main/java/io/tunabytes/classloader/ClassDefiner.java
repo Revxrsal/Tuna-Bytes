@@ -15,4 +15,9 @@ public interface ClassDefiner {
                          Class<?> neighbor,
                          ClassLoader loader,
                          ProtectionDomain protectionDomain) throws ClassFormatError;
+
+    default boolean requiresNeighbor() {
+        return false;
+    }
+
 }

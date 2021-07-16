@@ -71,4 +71,8 @@ final class Java11 implements ClassDefiner {
                     + " has no permission to define the class");
         }
     }
+
+    @Override public boolean requiresNeighbor() {
+        return true;
+    }
 }
