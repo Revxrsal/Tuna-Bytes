@@ -17,7 +17,7 @@ Check the [wiki](https://github.com/ReflxctionDev/Tuna-Bytes/wiki) for a full ov
 2. [Gradle setup](https://github.com/ReflxctionDev/Tuna-Bytes/wiki/Gradle-Setup)
 3. [Getting started](https://github.com/ReflxctionDev/Tuna-Bytes/wiki/Getting-started)
 4. [**Example**: Overwrite a method](https://github.com/ReflxctionDev/Tuna-Bytes/wiki/Overwrite)
-5. [**Example**: Inject into a method](https://github.com/ReflxctionDev/Tuna-Bytes/wiki/Injection)
+5. [**Example**: Inject into a method](https://github.com/ReflxctionDev/Tuna-Bytes/wiki/Injecting)
 6. [**Example**: Create accessors for inaccessible fields and methods](https://github.com/ReflxctionDev/Tuna-Bytes/wiki/Accessors)
 7. [**Example**: Mirroring a field or a method](https://github.com/ReflxctionDev/Tuna-Bytes/wiki/Mirroring)
 
