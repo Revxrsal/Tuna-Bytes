@@ -1,12 +1,12 @@
 package io.tunabytes.bytecode.introspect;
 
 import io.tunabytes.Definalize;
-import io.tunabytes.FieldMirror;
+import io.tunabytes.Mirror;
 import org.objectweb.asm.*;
 
 public class MixinFieldVisitor extends FieldVisitor {
 
-    private static final Type MIRROR = Type.getType(FieldMirror.class);
+    private static final Type MIRROR = Type.getType(Mirror.class);
     private static final Type DEFINALIZE = Type.getType(Definalize.class);
 
     protected boolean mirror, definalize;

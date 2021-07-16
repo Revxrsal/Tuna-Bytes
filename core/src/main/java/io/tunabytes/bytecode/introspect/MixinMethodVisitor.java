@@ -1,9 +1,7 @@
 package io.tunabytes.bytecode.introspect;
 
-import io.tunabytes.Accessor;
-import io.tunabytes.Inject;
+import io.tunabytes.*;
 import io.tunabytes.Inject.At;
-import io.tunabytes.Overwrite;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -16,9 +14,12 @@ public class MixinMethodVisitor extends MethodVisitor {
     private static final Type OVERWRITE = Type.getType(Overwrite.class);
     private static final Type INJECT = Type.getType(Inject.class);
     private static final Type ACCESSOR = Type.getType(Accessor.class);
+    private static final Type MIRROR = Type.getType(Mirror.class);
+    private static final Type DEFINALIZE = Type.getType(Definalize.class);
 
     protected MethodNode node;
-    protected boolean overwrite, inject, accessor;
+    protected String mirrorName;
+    protected boolean overwrite, inject, accessor, mirror, definalize;
     protected String overwrittenName;
     protected String injectMethodName;
     protected String accessorName;
@@ -35,12 +36,17 @@ public class MixinMethodVisitor extends MethodVisitor {
         boolean visitingAccessor = ACCESSOR.getDescriptor().equals(descriptor);
         boolean visitingOverwrite = OVERWRITE.getDescriptor().equals(descriptor);
         boolean visitingInject = INJECT.getDescriptor().equals(descriptor);
+        boolean visitingMirror = MIRROR.getDescriptor().equals(descriptor);
         if (visitingOverwrite)
             overwrite = true;
         if (visitingInject)
             inject = true;
         if (visitingAccessor)
             accessor = true;
+        if (visitingMirror)
+            mirror = true;
+        if (DEFINALIZE.getDescriptor().equals(descriptor))
+            definalize = true;
         return new AnnotationVisitor(Opcodes.ASM8, super.visitAnnotation(descriptor, visible)) {
             @Override public void visit(String name, Object value) {
                 super.visit(name, value);
@@ -49,6 +55,9 @@ public class MixinMethodVisitor extends MethodVisitor {
                 }
                 if (visitingOverwrite && name.equals("value")) {
                     overwrittenName = (String) value;
+                }
+                if (visitingMirror && name.equals("value")) {
+                    mirrorName = (String) value;
                 }
                 if (visitingInject) {
                     switch (name) {

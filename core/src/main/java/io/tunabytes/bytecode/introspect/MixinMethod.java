@@ -19,7 +19,8 @@ public final class MixinMethod {
     private final int injectLine;
     private final String injectMethod;
     private final At injectAt;
-    private final boolean overwrite, accessor, inject;
+    private final boolean overwrite, accessor, inject, mirror, definalize;
+    private final String mirrorName;
     private final String overwrittenName; // or accessed method
     private final String accessedProperty; // or accessed method
     private final MethodNode methodNode;

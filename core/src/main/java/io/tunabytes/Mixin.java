@@ -26,6 +26,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface Mixin {
 
-    Class<?> value();
-
+    Class<?> value() default Object.class;
+    String name() default "";
 }

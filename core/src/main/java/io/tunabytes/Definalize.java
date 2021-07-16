@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation added to {@link FieldMirror}s to mark their targetted fields
+ * An annotation added to {@link Mirror}s to mark their targetted fields or methods
  * as non-final.
  * <p>
- * See {@link FieldMirror} for more information
+ * See {@link Mirror} for more information
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Definalize {
 }

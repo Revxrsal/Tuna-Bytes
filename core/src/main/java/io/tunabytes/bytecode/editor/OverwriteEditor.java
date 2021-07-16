@@ -18,6 +18,7 @@ public class OverwriteEditor implements MixinsEditor {
         }
         for (MixinMethod method : info.getMethods()) {
             if (method.isInject()) continue;
+            if (method.isMirror()) continue;
             if (method.isOverwrite()) {
                 MethodNode node = method.getMethodNode();
                 if ((node.access & ACC_ABSTRACT) != 0) {
@@ -28,20 +29,7 @@ public class OverwriteEditor implements MixinsEditor {
                 underlying.instructions = new InsnList();
                 underlying.instructions.add(node.instructions);
                 for (AbstractInsnNode instruction : underlying.instructions) {
-                    if (instruction instanceof FieldInsnNode) {
-                        FieldInsnNode insn = (FieldInsnNode) instruction;
-                        if (insn.owner.equals(info.getMixinInternalName()))
-                            insn.owner = classNode.name;
-                    }
-                    if (instruction instanceof MethodInsnNode) {
-                        MethodInsnNode insn = (MethodInsnNode) instruction;
-                        if (insn.getOpcode() == INVOKEINTERFACE && insn.itf && insn.owner.equals(info.getMixinInternalName())) {
-                            insn.setOpcode(INVOKEVIRTUAL);
-                            insn.itf = false;
-                        }
-                        if (insn.owner.equals(info.getMixinInternalName()))
-                            insn.owner = classNode.name;
-                    }
+                    remapInstruction(classNode, info, instruction);
                 }
             }
         }

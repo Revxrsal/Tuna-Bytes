@@ -38,37 +38,49 @@ public class MixinsProcessor extends AbstractProcessor {
     @Override public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         for (Element element : roundEnv.getElementsAnnotatedWith(Mixin.class)) {
             TypeElement type = (TypeElement) element;
-
+            Mixin mixin = type.getAnnotation(Mixin.class);
+            String packageName = "";
             try {
-                type.getAnnotation(Mixin.class).value();
+                if (!mixin.name().isEmpty()) {
+                    packageName = mixin.name().substring(0, mixin.name().lastIndexOf('.'));
+                    mixins.add(type.getQualifiedName().toString() + "=" + mixin.name());
+                } else {
+                    mixin.value();
+                }
             } catch (MirroredTypeException e) {
+                if (mixin.name().isEmpty() && e.getTypeMirror().toString().equals("java.lang.Object")) {
+                    throw new IllegalStateException("@Mixin on " + type.getQualifiedName() + " does not specify a class name() or Class<?> value()");
+                }
                 mixins.add(type.getQualifiedName().toString() + "=" + e.getTypeMirror());
                 PackageElement packageElement = (PackageElement) asTypeElement(e.getTypeMirror()).getEnclosingElement();
-                String packageName = packageElement.toString();
-                String className = ("Neighbor" + packageName.hashCode()).replace("-", "");
-                String pn = packageName + "." + className;
-                if (neighbors.get(packageName) == null) {
-                    try {
-                        String fileName = packageName.isEmpty()
-                                ? className
-                                : pn;
-                        neighbors.put(packageName, fileName);
-                        JavaFileObject filerSourceFile = processingEnv.getFiler().createSourceFile(fileName);
-                        try (Writer writer = filerSourceFile.openWriter()) {
-                            if (!packageName.isEmpty()) {
-                                writer.write("package " + packageName + ";");
-                                writer.write("\n");
-                            }
-                            writer.write("class " + className + " {}");
-                        } catch (Exception i) {
-                            try {
-                                filerSourceFile.delete();
-                            } catch (Exception ignored) {
-                            }
-                            throw i;
+                packageName = packageElement.toString();
+            }
+            if (packageName.startsWith("java.")) {
+                throw new IllegalArgumentException("Cannot add @Mixins on Java classes!");
+            }
+            String className = ("Neighbor" + packageName.hashCode()).replace("-", "");
+            String pn = packageName + "." + className;
+            if (neighbors.get(packageName) == null) {
+                try {
+                    String fileName = packageName.isEmpty()
+                            ? className
+                            : pn;
+                    neighbors.put(packageName, fileName);
+                    JavaFileObject filerSourceFile = processingEnv.getFiler().createSourceFile(fileName);
+                    try (Writer writer = filerSourceFile.openWriter()) {
+                        if (!packageName.isEmpty()) {
+                            writer.write("package " + packageName + ";");
+                            writer.write("\n");
                         }
-                    } catch (IOException ignored) {
+                        writer.write("class " + className + " {}");
+                    } catch (Exception i) {
+                        try {
+                            filerSourceFile.delete();
+                        } catch (Exception ignored) {
+                        }
+                        throw i;
                     }
+                } catch (IOException ignored) {
                 }
             }
         }

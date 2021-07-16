@@ -128,17 +128,17 @@ public final class PointTest {
 ### Overwrite
 We would like to overwrite the functionality of `print()` to print the x and y in a different format.
 ```java
-import io.tunabytes.FieldMirror;
+import io.tunabytes.Mirror;
 import io.tunabytes.Mixin;
 import io.tunabytes.Overwrite;
 
 @Mixin(Point.class)
 public class PointMixin {
 
-    @FieldMirror
+    @Mirror
     private int x; // the actual x field
     
-    @FieldMirror
+    @Mirror
     private int y; // the actual y field
 
     @Overwrite
@@ -198,7 +198,7 @@ public class Animal {
 
 Injection is done using the `@Inject` annotation:
 ```java
-import io.tunabytes.FieldMirror;
+import io.tunabytes.Mirror;
 import io.tunabytes.Inject;
 import io.tunabytes.Inject.At;
 import io.tunabytes.Mixin;

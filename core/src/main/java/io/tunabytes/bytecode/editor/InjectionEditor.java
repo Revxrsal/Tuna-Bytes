@@ -38,20 +38,7 @@ public class InjectionEditor implements MixinsEditor {
                     .findFirst().orElseThrow(() -> new NoSuchMethodException(injectIn));
             InsnList list = method.getMethodNode().instructions;
             for (AbstractInsnNode instruction : list) {
-                if (instruction instanceof FieldInsnNode) {
-                    FieldInsnNode insn = (FieldInsnNode) instruction;
-                    if (insn.owner.equals(info.getMixinInternalName()))
-                        insn.owner = classNode.name;
-                }
-                if (instruction instanceof MethodInsnNode) {
-                    MethodInsnNode insn = (MethodInsnNode) instruction;
-                    if (insn.getOpcode() == INVOKEINTERFACE && insn.itf && insn.owner.equals(info.getMixinInternalName())) {
-                        insn.setOpcode(INVOKEVIRTUAL);
-                        insn.itf = false;
-                    }
-                    if (insn.owner.equals(info.getMixinInternalName()))
-                        insn.owner = classNode.name;
-                }
+                remapInstruction(classNode, info, instruction);
             }
 
             AbstractInsnNode lastInjectedReturn = null;

@@ -29,7 +29,6 @@ public class AccessorEditor implements MixinsEditor {
                     targetType = targetType.getReturnType();
                 else if (method.getType() == CallType.SET)
                     targetType = arguments[0];
-//                else targetType = null;
 
                 boolean isStatic;
                 switch (method.getType()) {
