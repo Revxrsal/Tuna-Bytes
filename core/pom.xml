@@ -5,7 +5,7 @@
     <parent>
         <artifactId>tuna-bytes</artifactId>
         <groupId>io.tunabytes</groupId>
-        <version>1.0</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -40,7 +40,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
