@@ -26,6 +26,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface Mixin {
 
+    /**
+     * The class we're targeting.
+     *
+     * @return The class we will be mixing into
+     */
     Class<?> value() default Object.class;
+
+    /**
+     * The name of the class, an alternative way in case of inaccessible classes
+     *
+     * @return The name of the class
+     */
     String name() default "";
 }
