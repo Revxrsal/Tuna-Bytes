@@ -13,10 +13,11 @@ Tuna-bytes is an all-purpose powerful class and bytecode manipulation mixins for
 ## Index
 1. [Maven setup](https://github.com/ReflxctionDev/tuna-bytes/wiki/Maven-Setup)
 2. [Gradle setup](https://github.com/ReflxctionDev/tuna-bytes/wiki/Gradle-Setup)
-3. [**Example**: Overwrite a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Overwrite)
-4. [**Example**: Inject into a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Injecting)
-5. [**Example**: Create accessors for inaccessible fields and methods](https://github.com/ReflxctionDev/tuna-bytes/wiki/Accessors)
-6. [**Example**: Mirroring a field or a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Mirroring)
+3. [Getting started](https://github.com/ReflxctionDev/tuna-bytes/wiki/Getting-started)
+4. [**Example**: Overwrite a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Overwrite)
+5. [**Example**: Inject into a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Injecting)
+6. [**Example**: Create accessors for inaccessible fields and methods](https://github.com/ReflxctionDev/tuna-bytes/wiki/Accessors)
+7. [**Example**: Mirroring a field or a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Mirroring)
 
 # Drawbacks
 Just like any other bytecode manipulation library, **manipulating a class after is has been loaded is not possible** without things like instrumentation, agents or such. Tuna-bytes assumes that any class it is about to modify has not been loaded, and will otherwise throw an exception. To suppress `Class XX has alreade beel loaded` exceptions, use `MixinsBootstrap.init(true)`
