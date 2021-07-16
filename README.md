@@ -13,9 +13,9 @@ Tuna-bytes is an all-purpose powerful class and bytecode manipulation mixins for
 ## Index
 1. [Maven setup](https://github.com/ReflxctionDev/tuna-bytes/wiki/Maven-Setup)
 2. [Gradle setup](https://github.com/ReflxctionDev/tuna-bytes/wiki/Gradle-Setup)
-3. [**Example**: Create accessors for inaccessible fields and methods](https://github.com/ReflxctionDev/tuna-bytes/wiki/Accessors)
-4. [**Example**: Overwrite a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Overwrite)
-5. [**Example**: Inject into a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Injecting)
+3. [**Example**: Overwrite a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Overwrite)
+4. [**Example**: Inject into a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Injecting)
+5. [**Example**: Create accessors for inaccessible fields and methods](https://github.com/ReflxctionDev/tuna-bytes/wiki/Accessors)
 6. [**Example**: Mirroring a field or a method](https://github.com/ReflxctionDev/tuna-bytes/wiki/Mirroring)
 
 # Drawbacks
