@@ -22,4 +22,4 @@ Check the [wiki](https://github.com/ReflxctionDev/Tuna-Bytes/wiki) for a full ov
 7. [**Example**: Mirroring a field or a method](https://github.com/ReflxctionDev/Tuna-Bytes/wiki/Mirroring)
 
 # Drawbacks
-Just like any other bytecode manipulation library, **manipulating a class after is has been loaded is not possible** without things like instrumentation, agents or such. Tuna-bytes assumes that any class it is about to modify has not been loaded, and will otherwise throw an exception. To suppress `Class XX has alreade beel loaded` exceptions, use `MixinsBootstrap.init(true)`
+Just like any other bytecode manipulation library, **manipulating a class after is has been loaded is not possible** without things like instrumentation, agents or such. Tuna-bytes assumes that any class it is about to modify has not been loaded, and will otherwise throw an exception. To suppress `Class XX has already been loaded` exceptions, use `MixinsBootstrap.init(true)`
