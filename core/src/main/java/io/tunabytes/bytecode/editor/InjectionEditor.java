@@ -6,24 +6,13 @@ import io.tunabytes.bytecode.introspect.MixinMethod;
 import lombok.SneakyThrows;
 import org.objectweb.asm.tree.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * A mixins editor for processing {@link io.tunabytes.Inject} methods.
  */
 public class InjectionEditor implements MixinsEditor {
-
-    private static final List<Integer> RETURN_OPCODES = Arrays.asList(
-            RETURN,
-            ARETURN,
-            IRETURN,
-            DRETURN,
-            FRETURN,
-            LRETURN
-    );
 
     @SneakyThrows @Override public void edit(ClassNode classNode, MixinInfo info) {
         for (MixinMethod method : info.getMethods()) {
@@ -99,7 +88,7 @@ public class InjectionEditor implements MixinsEditor {
         return labelMap;
     }
 
-    private static InsnList cloneInsnList(InsnList insns) {
+    public static InsnList cloneInsnList(InsnList insns) {
         return cloneInsnList(cloneLabels(insns), insns);
     }
 
@@ -108,7 +97,6 @@ public class InjectionEditor implements MixinsEditor {
         for (AbstractInsnNode insn = insns.getFirst(); insn != null; insn = insn.getNext()) {
             clone.add(insn.clone(labelMap));
         }
-
         return clone;
     }
 }

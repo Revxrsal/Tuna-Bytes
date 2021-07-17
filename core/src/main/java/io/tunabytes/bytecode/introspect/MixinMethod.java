@@ -16,10 +16,11 @@ public final class MixinMethod {
     private final String name;
     private final int access;
     private final Type descriptor;
+    private final String realDescriptor;
     private final int injectLine;
     private final String injectMethod;
     private final At injectAt;
-    private final boolean overwrite, accessor, inject, mirror, definalize;
+    private final boolean overwrite, accessor, inject, mirror, definalize, requireTypeRemapping;
     private final String mirrorName;
     private final String overwrittenName; // or accessed method
     private final String accessedProperty; // or accessed method

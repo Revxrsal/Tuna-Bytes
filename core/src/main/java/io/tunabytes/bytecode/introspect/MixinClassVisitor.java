@@ -27,10 +27,11 @@ public class MixinClassVisitor extends ClassVisitor {
     }
 
     @Override public FieldVisitor visitField(int access, String fname, String descriptor, String signature, Object value) {
-        Type fieldType = Type.getType(descriptor);
         return new MixinFieldVisitor(new FieldNode(access, fname, descriptor, signature, value)) {
             @Override public void visitEnd() {
-                fields.add(new MixinField(access, mirror, definalize, name == null ? fname : name, fieldType, (FieldNode) fv));
+                FieldNode node = (FieldNode) fv;
+                node.desc = desc;
+                        fields.add(new MixinField(access, mirror, definalize, name == null ? fname : name, desc, remapped, descriptor, (FieldNode) fv));
             }
         };
     }
@@ -38,10 +39,13 @@ public class MixinClassVisitor extends ClassVisitor {
     @Override public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         return new MixinMethodVisitor(new MethodNode(access, name, descriptor, signature, exceptions)) {
             @Override public void visitEnd() {
+                Type desc = Type.getMethodType(returnType, argumentTypes);
+                node.desc = desc.getDescriptor();
                 methods.add(new MixinMethod(
                         name,
                         access,
-                        Type.getMethodType(descriptor),
+                        desc,
+                        descriptor,
                         injectLine,
                         injectMethodName,
                         injectAt,
@@ -50,6 +54,7 @@ public class MixinClassVisitor extends ClassVisitor {
                         inject,
                         mirror,
                         definalize,
+                        remap,
                         mirrorName == null ? name : mirrorName,
                         overwrittenName == null ? name : overwrittenName,
                         accessorName == null ? getActualName(name) : accessorName,

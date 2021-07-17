@@ -14,8 +14,9 @@ public final class MixinField {
     private final int access;
     private final boolean mirror;
     private final boolean definalize;
-    private final String name;
-    private final Type type;
+    private final String name, desc;
+    private final boolean remapped;
+    private final String type;
     private final FieldNode node;
 
 }

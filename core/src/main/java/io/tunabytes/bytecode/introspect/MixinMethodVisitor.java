@@ -2,24 +2,27 @@ package io.tunabytes.bytecode.introspect;
 
 import io.tunabytes.*;
 import io.tunabytes.Inject.At;
+import io.tunabytes.bytecode.introspect.MixinMethod.CallType;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
-import io.tunabytes.bytecode.introspect.MixinMethod.CallType;
 
 public class MixinMethodVisitor extends MethodVisitor {
 
-    private static final Type OVERWRITE = Type.getType(Overwrite.class);
-    private static final Type INJECT = Type.getType(Inject.class);
-    private static final Type ACCESSOR = Type.getType(Accessor.class);
-    private static final Type MIRROR = Type.getType(Mirror.class);
-    private static final Type DEFINALIZE = Type.getType(Definalize.class);
+    private static final String OVERWRITE = Type.getDescriptor(Overwrite.class);
+    private static final String INJECT = Type.getDescriptor(Inject.class);
+    private static final String ACCESSOR = Type.getDescriptor(Accessor.class);
+    private static final String MIRROR = Type.getDescriptor(Mirror.class);
+    private static final String DEFINALIZE = Type.getDescriptor(Definalize.class);
+    private static final String ACTUAL_TYPE = Type.getDescriptor(ActualType.class);
 
     protected MethodNode node;
     protected String mirrorName;
-    protected boolean overwrite, inject, accessor, mirror, definalize;
+    protected Type returnType;
+    protected Type[] argumentTypes;
+    protected boolean overwrite, inject, accessor, mirror, definalize, remap;
     protected String overwrittenName;
     protected String injectMethodName;
     protected String accessorName;
@@ -30,13 +33,17 @@ public class MixinMethodVisitor extends MethodVisitor {
     public MixinMethodVisitor(MethodNode node) {
         super(Opcodes.ASM8, node);
         this.node = node;
+        Type desc = Type.getMethodType(node.desc);
+        returnType = desc.getReturnType();
+        argumentTypes = desc.getArgumentTypes();
     }
 
     @Override public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        boolean visitingAccessor = ACCESSOR.getDescriptor().equals(descriptor);
-        boolean visitingOverwrite = OVERWRITE.getDescriptor().equals(descriptor);
-        boolean visitingInject = INJECT.getDescriptor().equals(descriptor);
-        boolean visitingMirror = MIRROR.getDescriptor().equals(descriptor);
+        boolean visitingAccessor = ACCESSOR.equals(descriptor);
+        boolean visitingOverwrite = OVERWRITE.equals(descriptor);
+        boolean visitingInject = INJECT.equals(descriptor);
+        boolean visitingMirror = MIRROR.equals(descriptor);
+        boolean visitingActualType = ACTUAL_TYPE.equals(descriptor);
         if (visitingOverwrite)
             overwrite = true;
         if (visitingInject)
@@ -45,7 +52,7 @@ public class MixinMethodVisitor extends MethodVisitor {
             accessor = true;
         if (visitingMirror)
             mirror = true;
-        if (DEFINALIZE.getDescriptor().equals(descriptor))
+        if (DEFINALIZE.equals(descriptor))
             definalize = true;
         return new AnnotationVisitor(Opcodes.ASM8, super.visitAnnotation(descriptor, visible)) {
             @Override public void visit(String name, Object value) {
@@ -58,6 +65,11 @@ public class MixinMethodVisitor extends MethodVisitor {
                 }
                 if (visitingMirror && name.equals("value")) {
                     mirrorName = (String) value;
+                }
+                if (visitingActualType && name.equals("value")) {
+                    remap = true;
+                    String rtype = returnType.getDescriptor();
+                    returnType = fromActualType(rtype, (String) value);
                 }
                 if (visitingInject) {
                     switch (name) {
@@ -78,6 +90,17 @@ public class MixinMethodVisitor extends MethodVisitor {
                 if (visitingInject && name.equals("at")) {
                     injectAt = At.at(value);
                 }
+            }
+        };
+    }
+
+    @Override public AnnotationVisitor visitParameterAnnotation(int parameter, String descriptor, boolean visible) {
+        return new AnnotationVisitor(Opcodes.ASM8, super.visitParameterAnnotation(parameter, descriptor, visible)) {
+            @Override public void visit(String name, Object value) {
+                remap = true;
+                if (ACTUAL_TYPE.equals(descriptor))
+                    argumentTypes[parameter] = fromActualType(argumentTypes[parameter].getDescriptor(), (String) value);
+                super.visit(name, value);
             }
         };
     }
@@ -111,6 +134,13 @@ public class MixinMethodVisitor extends MethodVisitor {
             return Character.toLowerCase(value.charAt(prefix.length())) + value.substring(prefix.length() + 1);
         }
         return value;
+    }
+
+    public static Type fromActualType(String descriptor, String actualType) {
+        String arrayAddition = "";
+        if (descriptor.startsWith("["))
+            arrayAddition = descriptor.substring(0, descriptor.lastIndexOf('[') + 1);
+        return Type.getType(arrayAddition + "L" + actualType.replace('.', '/') + ";");
     }
 
 }
