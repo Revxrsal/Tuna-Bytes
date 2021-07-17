@@ -1,10 +1,9 @@
 package io.tunabytes.bytecode.introspect;
 
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.FieldNode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import org.objectweb.asm.tree.FieldNode;
 
 @Getter
 @AllArgsConstructor
