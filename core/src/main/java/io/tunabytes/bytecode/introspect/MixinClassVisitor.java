@@ -31,7 +31,7 @@ public class MixinClassVisitor extends ClassVisitor {
             @Override public void visitEnd() {
                 FieldNode node = (FieldNode) fv;
                 node.desc = desc;
-                        fields.add(new MixinField(access, mirror, definalize, name == null ? fname : name, desc, remapped, descriptor, (FieldNode) fv));
+                fields.add(new MixinField(access, mirror, definalize, name == null ? fname : name, desc, remapped, descriptor, (FieldNode) fv));
             }
         };
     }

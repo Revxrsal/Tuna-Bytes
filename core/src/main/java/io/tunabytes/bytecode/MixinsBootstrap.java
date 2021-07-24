@@ -4,12 +4,12 @@ import io.tunabytes.bytecode.editor.*;
 import io.tunabytes.bytecode.introspect.MixinClassVisitor;
 import io.tunabytes.bytecode.introspect.MixinInfo;
 import io.tunabytes.classloader.TunaClassDefiner;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -21,7 +21,7 @@ import java.util.Map.Entry;
  */
 public final class MixinsBootstrap {
 
-    private MixinsBootstrap() {}
+    private MixinsBootstrap() { }
 
     /**
      * Initializes and applies mixins, and throws an exception on each loaded class.
@@ -38,6 +38,21 @@ public final class MixinsBootstrap {
      *                            a class appears to be loaded.
      */
     @SneakyThrows public static void init(boolean ignoreLoadedClasses) {
+        init(ignoreLoadedClasses, Collections.emptyList());
+    }
+
+    /**
+     * Initializes and applies mixins
+     *
+     * @param ignoreLoadedClasses Whether should we ignore any class that has been alreade loaded.
+     *                            If false, an {@link IllegalStateException} will be thrown if
+     *                            a class appears to be loaded.
+     * @param searchClassLoaders  A list of additional classloaders to search classes for.
+     */
+    public static void init(boolean ignoreLoadedClasses, Collection<ClassLoader> searchClassLoaders) {
+        Set<ClassLoader> classLoaders = new LinkedHashSet<>();
+        classLoaders.add(Thread.currentThread().getContextClassLoader());
+        classLoaders.addAll(searchClassLoaders);
         List<MixinsEditor> editors = new ArrayList<>();
         editors.add(new DefinalizeEditor());
         editors.add(new OverwriteEditor());
@@ -45,37 +60,37 @@ public final class MixinsBootstrap {
         editors.add(new InjectionEditor());
         editors.add(new MethodMergerEditor());
         MixinsConfig config = new MixinsConfig();
-        Map<String, Entry<ClassWriter, ClassNode>> writers = new HashMap<>();
+        Map<String, TargetedMixin> writers = new HashMap<>();
         for (MixinEntry mixinEntry : config.getMixinEntries()) {
             ClassReader reader = mixinEntry.mixinReader();
             MixinClassVisitor visitor = new MixinClassVisitor();
             reader.accept(visitor, ClassReader.SKIP_FRAMES);
             MixinInfo info = visitor.getInfo();
-            ClassReader targetReader = mixinEntry.targetReader();
+            ClassReader targetReader = mixinEntry.targetReader(classLoaders);
 
             ClassNode targetNode;
-            Entry<ClassWriter, ClassNode> writerEntry = writers.get(mixinEntry.getTargetClass());
+            TargetedMixin writerEntry = writers.get(mixinEntry.getTargetClass());
             if (writerEntry == null) {
                 ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
                 targetNode = new ClassNode();
                 targetReader.accept(targetNode, ClassReader.SKIP_FRAMES);
-                writers.put(mixinEntry.getTargetClass(), new SimpleEntry<>(writer, targetNode));
+                writers.put(mixinEntry.getTargetClass(), new TargetedMixin(writer, mixinEntry.getClassLoader(), targetNode));
             } else {
-                targetNode = writerEntry.getValue();
+                targetNode = writerEntry.node;
             }
             for (MixinsEditor editor : editors) {
                 editor.edit(targetNode, info);
             }
         }
-        for (Entry<String, Entry<ClassWriter, ClassNode>> writerEntry : writers.entrySet()) {
-            Entry<ClassWriter, ClassNode> be = writerEntry.getValue();
-            be.getValue().accept(be.getKey());
+        for (Entry<String, TargetedMixin> writerEntry : writers.entrySet()) {
+            TargetedMixin mixin = writerEntry.getValue();
+            mixin.node.accept(mixin.writer);
             try {
                 TunaClassDefiner.defineClass(
                         writerEntry.getKey(),
-                        be.getKey().toByteArray(),
+                        mixin.writer.toByteArray(),
                         config.getNeighbor(writerEntry.getKey()),
-                        Thread.currentThread().getContextClassLoader(),
+                        mixin.classLoader,
                         null
                 );
             } catch (Throwable throwable) {
@@ -88,4 +103,13 @@ public final class MixinsBootstrap {
             }
         }
     }
+
+    @AllArgsConstructor
+    private static class TargetedMixin {
+
+        private final ClassWriter writer;
+        private final ClassLoader classLoader;
+        private final ClassNode node;
+    }
+
 }
