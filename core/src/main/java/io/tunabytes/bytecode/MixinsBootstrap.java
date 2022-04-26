@@ -1,17 +1,29 @@
 package io.tunabytes.bytecode;
 
-import io.tunabytes.bytecode.editor.*;
-import io.tunabytes.bytecode.introspect.MixinClassVisitor;
-import io.tunabytes.bytecode.introspect.MixinInfo;
-import io.tunabytes.classloader.TunaClassDefiner;
-import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
-import java.util.*;
-import java.util.Map.Entry;
+import io.tunabytes.bytecode.editor.AccessorEditor;
+import io.tunabytes.bytecode.editor.DefinalizeEditor;
+import io.tunabytes.bytecode.editor.InjectionEditor;
+import io.tunabytes.bytecode.editor.MethodMergerEditor;
+import io.tunabytes.bytecode.editor.MixinsEditor;
+import io.tunabytes.bytecode.editor.OverwriteEditor;
+import io.tunabytes.bytecode.introspect.MixinClassVisitor;
+import io.tunabytes.bytecode.introspect.MixinInfo;
+import io.tunabytes.classloader.TunaClassDefiner;
 
 /**
  * A class for applying changes from mixins to actual classes.
@@ -37,7 +49,7 @@ public final class MixinsBootstrap {
      *                            If false, an {@link IllegalStateException} will be thrown if
      *                            a class appears to be loaded.
      */
-    @SneakyThrows public static void init(boolean ignoreLoadedClasses) {
+     public static void init(boolean ignoreLoadedClasses) {
         init(ignoreLoadedClasses, Collections.emptyList());
     }
 
@@ -104,12 +116,20 @@ public final class MixinsBootstrap {
         }
     }
 
-    @AllArgsConstructor
+   
     private static class TargetedMixin {
 
-        private final ClassWriter writer;
+    	private final ClassWriter writer;
         private final ClassLoader classLoader;
         private final ClassNode node;
+    	
+        public TargetedMixin(ClassWriter writer2, ClassLoader classLoader2, ClassNode targetNode) {
+			//TODO Auto-generated constructor stub
+		writer = writer2;
+		classLoader = classLoader2;
+		node=targetNode;
+        }
+	
     }
 
 }

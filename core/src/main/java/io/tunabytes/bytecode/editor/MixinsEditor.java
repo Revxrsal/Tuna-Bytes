@@ -31,8 +31,10 @@ public interface MixinsEditor extends Opcodes {
      *
      * @param node Class node to edit.
      * @param info Information about the mixin being transformed
+     * @throws NoSuchMethodException 
+     * @throws NoSuchFieldException 
      */
-    void edit(ClassNode node, MixinInfo info);
+    void edit(ClassNode node, MixinInfo info) ;
 
     /**
      * Applies simple changes to methods and fields instructions to make sure they
@@ -48,7 +50,7 @@ public interface MixinsEditor extends Opcodes {
             if (insn.owner.equals(info.getMixinInternalName())) {
                 insn.owner = classNode.name;
                 info.getFields().stream()
-                        .filter(MixinField::isRemapped)
+                        //.filter(MixinField::isRemapped)
                         .filter(c -> c.getType().equals(insn.desc))
                         .findFirst()
                         .ifPresent(field -> insn.desc = field.getDesc());
@@ -63,7 +65,7 @@ public interface MixinsEditor extends Opcodes {
             if (insn.owner.equals(info.getMixinInternalName())) {
                 insn.owner = classNode.name;
                 info.getMethods().stream()
-                        .filter(MixinMethod::isRequireTypeRemapping)
+                        //.filter(MixinMethod::isRequireTypeRemapping) need to fix these
                         .filter(c -> c.getRealDescriptor().equals(insn.desc))
                         .findFirst()
                         .ifPresent(method -> insn.desc = method.getDescriptor().getDescriptor());

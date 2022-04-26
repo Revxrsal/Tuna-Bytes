@@ -1,18 +1,24 @@
 package io.tunabytes.bytecode.editor;
 
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
+
 import io.tunabytes.bytecode.introspect.MixinInfo;
 import io.tunabytes.bytecode.introspect.MixinMethod;
 import io.tunabytes.bytecode.introspect.MixinMethod.CallType;
-import lombok.SneakyThrows;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.*;
 
 /**
  * A mixins editor for processing {@link io.tunabytes.Accessor} methods.
  */
 public class AccessorEditor implements MixinsEditor {
 
-    @SneakyThrows @Override public void edit(ClassNode node, MixinInfo info) {
+     @Override public void edit(ClassNode node, MixinInfo info) {
         if (info.isMixinInterface()) {
             node.interfaces.add(info.getMixinInternalName());
             for (MixinMethod method : info.getMethods()) {
@@ -33,45 +39,63 @@ public class AccessorEditor implements MixinsEditor {
                 boolean isStatic;
                 switch (method.getType()) {
                     case GET:
-                        FieldNode accessed = node.fields.stream().filter(c -> c.name.equals(method.getAccessedProperty())).findFirst()
-                                .orElseThrow(() -> new NoSuchFieldException(method.getAccessedProperty()));
-                        isStatic = (accessed.access & ACC_STATIC) != 0;
-                        if (!isStatic)
-                            impl.instructions.add(new VarInsnNode(ALOAD, 0));
-                        impl.instructions.add(new FieldInsnNode(GETFIELD, node.name, method.getAccessedProperty(), targetType.getDescriptor()));
-                        impl.instructions.add(new InsnNode(targetType.getOpcode(IRETURN)));
-                        break;
+                        FieldNode accessed;
+						try {
+							accessed = node.fields.stream().filter(c -> c.name.equals(method.getAccessedProperty())).findFirst()
+							        .orElseThrow(() -> new NoSuchFieldException(method.getAccessedProperty()));
+						
+							 isStatic = (accessed.access & ACC_STATIC) != 0;
+		                        if (!isStatic)
+		                            impl.instructions.add(new VarInsnNode(ALOAD, 0));
+		                        impl.instructions.add(new FieldInsnNode(GETFIELD, node.name, method.getAccessedProperty(), targetType.getDescriptor()));
+		                        impl.instructions.add(new InsnNode(targetType.getOpcode(IRETURN)));
+		                        break;
+						} catch (NoSuchFieldException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+                       
                     case SET:
-                        accessed = node.fields.stream().filter(c -> c.name.equals(method.getAccessedProperty())).findFirst()
-                                .orElseThrow(() -> new NoSuchFieldException(method.getAccessedProperty()));
-                        isStatic = (accessed.access & ACC_STATIC) != 0;
-                        if (!isStatic)
-                            impl.instructions.add(new VarInsnNode(ALOAD, 0));
-                        if ((accessed.access & ACC_FINAL) != 0)
-                            accessed.access &= ~ACC_FINAL;
-                        impl.instructions.add(new VarInsnNode(targetType.getOpcode(ILOAD), getArgIndex(0, isStatic, arguments)));
-                        impl.instructions.add(new FieldInsnNode(PUTFIELD, node.name, method.getAccessedProperty(), targetType.getDescriptor()));
-                        impl.instructions.add(new InsnNode(returnType.getOpcode(IRETURN)));
-                        break;
+                        try {
+							accessed = node.fields.stream().filter(c -> c.name.equals(method.getAccessedProperty())).findFirst()
+							        .orElseThrow(() -> new NoSuchFieldException(method.getAccessedProperty()));
+							isStatic = (accessed.access & ACC_STATIC) != 0;
+							if (!isStatic)
+							    impl.instructions.add(new VarInsnNode(ALOAD, 0));
+							if ((accessed.access & ACC_FINAL) != 0)
+							    accessed.access &= ~ACC_FINAL;
+							impl.instructions.add(new VarInsnNode(targetType.getOpcode(ILOAD), getArgIndex(0, isStatic, arguments)));
+							impl.instructions.add(new FieldInsnNode(PUTFIELD, node.name, method.getAccessedProperty(), targetType.getDescriptor()));
+							impl.instructions.add(new InsnNode(returnType.getOpcode(IRETURN)));
+							break;
+						} catch (NoSuchFieldException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
                     case INVOKE:
-                        MethodNode accessedMethod = node.methods.stream().filter(m -> m.name.equals(method.getAccessedProperty()) && m.desc.equals(n.desc))
-                                .findFirst().orElseThrow(() -> new NoSuchMethodException(method.getAccessedProperty()));
-                        isStatic = (accessedMethod.access & ACC_STATIC) != 0;
-                        if (!isStatic)
-                            impl.instructions.add(new VarInsnNode(ALOAD, 0));
-                        for (int i = 0; i < targetType.getArgumentTypes().length; i++) {
-                            impl.instructions.add(new VarInsnNode(arguments[i].getOpcode(ILOAD), getArgIndex(i, isStatic, arguments)));
-                        }
-                        if (isStatic)
-                            impl.instructions.add(new MethodInsnNode(INVOKESTATIC, node.name, method.getAccessedProperty(), method.getDescriptor().getDescriptor()));
-                        else {
-                            if (method.isPrivate() || accessedMethod.name.endsWith("init>"))
-                                impl.instructions.add(new MethodInsnNode(INVOKESPECIAL, node.name, method.getAccessedProperty(), method.getDescriptor().getDescriptor()));
-                            else
-                                impl.instructions.add(new MethodInsnNode(INVOKEVIRTUAL, node.name, method.getAccessedProperty(), method.getDescriptor().getDescriptor()));
-                        }
-                        impl.instructions.add(new InsnNode(targetType.getReturnType().getOpcode(IRETURN)));
-                        break;
+                        try {
+							MethodNode accessedMethod = node.methods.stream().filter(m -> m.name.equals(method.getAccessedProperty()) && m.desc.equals(n.desc))
+							        .findFirst().orElseThrow(() -> new NoSuchMethodException(method.getAccessedProperty()));
+							isStatic = (accessedMethod.access & ACC_STATIC) != 0;
+							if (!isStatic)
+							    impl.instructions.add(new VarInsnNode(ALOAD, 0));
+							for (int i = 0; i < targetType.getArgumentTypes().length; i++) {
+							    impl.instructions.add(new VarInsnNode(arguments[i].getOpcode(ILOAD), getArgIndex(i, isStatic, arguments)));
+							}
+							if (isStatic)
+							    impl.instructions.add(new MethodInsnNode(INVOKESTATIC, node.name, method.getAccessedProperty(), method.getDescriptor().getDescriptor()));
+							else {
+							    if (method.isPrivate() || accessedMethod.name.endsWith("init>"))
+							        impl.instructions.add(new MethodInsnNode(INVOKESPECIAL, node.name, method.getAccessedProperty(), method.getDescriptor().getDescriptor()));
+							    else
+							        impl.instructions.add(new MethodInsnNode(INVOKEVIRTUAL, node.name, method.getAccessedProperty(), method.getDescriptor().getDescriptor()));
+							}
+							impl.instructions.add(new InsnNode(targetType.getReturnType().getOpcode(IRETURN)));
+							break;
+						} catch (NoSuchMethodException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
                 }
                 node.methods.add(impl);
             }
